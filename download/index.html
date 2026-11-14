@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>下载大可咖啡 RoastCommons</title>
+<!--
+  The public download page: https://roastcommons.github.io/download
+  The buttons point at GitHub's "latest release" links of RoastCommons/releases, so this page never needs editing
+  for a new version. Static and self-contained: nothing is loaded from anywhere else.
+-->
+<style>
+  :root { --bg:#f4f1ea; --fg:#1d1a16; --muted:#6b6358; --line:#ddd5c8; --accent:#2f5d50; --card:#fffdf8; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141210; --fg:#ece6dc; --muted:#a39a8d; --line:#3a342d; --accent:#7fb8a4; --card:#1d1a17; } }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  main { max-width:620px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:1.6rem; margin:0 0 4px; }
+  h2 { font-size:1.05rem; margin:0 0 6px; }
+  .muted { color:var(--muted); font-size:.92rem; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin:16px 0; }
+  .downloads { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0 6px; }
+  a.button { display:inline-flex; flex-direction:column; align-items:flex-start; min-width:200px; padding:12px 18px; border-radius:12px; background:var(--accent); color:#fff; text-decoration:none; }
+  a.button b { font-size:1.05rem; }
+  a.button span { font-size:.82rem; opacity:.85; }
+  ol, ul { padding-left:1.3em; margin:8px 0 0; }
+  li { margin:6px 0; }
+  code { padding:1px 6px; border:1px solid var(--line); border-radius:6px; font:13px ui-monospace, Menlo, monospace; overflow-wrap:anywhere; }
+  a { color:var(--accent); }
+  .tag { display:inline-block; margin-left:6px; padding:0 8px; border:1px solid var(--accent); border-radius:999px; color:var(--accent); font-size:.72rem; font-weight:700; letter-spacing:.04em; vertical-align:3px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>大可咖啡 RoastCommons <span class="tag">BETA</span></h1>
+  <p class="muted">跟着烘豆的一天走的烘焙笔记：记录每一锅，规划下一锅，在 Artisan 里跟着背景曲线烘。<br>
+  A roasting notebook that follows the roasting day: keep every roast, plan the next one, and follow it as a background curve in Artisan.</p>
+
+  <div class="downloads">
+    <a class="button" href="https://github.com/RoastCommons/releases/releases/latest/download/RoastCommons-mac.dmg"><b>下载 Mac 版</b><span>macOS 12 或更新 · Download for Mac</span></a>
+    <a class="button" href="https://github.com/RoastCommons/releases/releases/latest/download/RoastCommons-windows.exe"><b>下载 Windows 版</b><span>Windows 10 或更新 · Download for Windows</span></a>
+  </div>
+  <p class="muted"><a href="https://github.com/RoastCommons/releases/releases">所有版本、更新说明和校验和 · All versions, notes and checksums</a></p>
+
+  <section>
+    <h2>Mac：第一次打开 <span class="muted">First open on a Mac</span></h2>
+    <p class="muted">测试版没有经过苹果公证，第一次打开会提示“无法验证”。只需要做一次：</p>
+    <ol>
+      <li>打开下载的 .dmg，把 RoastCommons 拖到「应用程序」。</li>
+      <li>双击打开一次，看到提示点「完成」（不要移到废纸篓）。</li>
+      <li>打开「系统设置 › 隐私与安全性」，往下找到 RoastCommons，点「仍要打开」，输入电脑密码。</li>
+      <li>第一次运行时系统可能请你安装苹果的「命令行工具」，点「安装」，几分钟后再打开 app。</li>
+    </ol>
+    <p class="muted">The beta is not notarized: open it once, click Done, then System Settings › Privacy &amp; Security › Open Anyway. If macOS offers Apple's command line tools, install them and open the app again.</p>
+  </section>
+
+  <section>
+    <h2>Windows：第一次打开 <span class="muted">First open on Windows</span></h2>
+    <ol>
+      <li>双击下载的 .exe，不需要安装，也不需要 Python。</li>
+      <li>如果出现「Windows 已保护你的电脑」，点「更多信息 › 仍要运行」。</li>
+    </ol>
+    <p class="muted">No installer needed. If SmartScreen appears, click More info › Run anyway.</p>
+  </section>
+
+  <section>
+    <h2>还需要什么 <span class="muted">What else you need</span></h2>
+    <ul>
+      <li><b>Artisan</b>：免费的烘焙记录软件，从 <a href="https://artisan-scope.org" rel="noopener">artisan-scope.org</a> 下载。app 会帮你打开它的自动保存。<br><span class="muted">Free roast logger; the app turns on its autosave for you.</span></li>
+      <li><b>GitHub 账号</b>：第一次打开时用 GitHub 登录。测试版只对成员开放，不是成员的话在 app 里点「申请加入」，管理员批准后自动解锁。<br><span class="muted">Sign in with GitHub. The beta is invite-only: press Request to join in the app and an owner approves it.</span></li>
+      <li><b>助手（可选）</b>：在 app 里一键安装 opencode，再填你自己的模型 API key。<br><span class="muted">Optional assistant: one-click opencode install inside the app, plus your own model key.</span></li>
+    </ul>
+  </section>
+
+  <p class="muted">之后的新版本会在 app 里提示更新，点一下就能装好，下载的文件都会先核对校验和。<br>
+  New versions show up as an Update button inside the app; every download is checked against its checksum first.</p>
+</main>
+</body>
+</html>
