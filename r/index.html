@@ -34,44 +34,92 @@
   <div id="ok" hidden>
     <section>
       <strong>在手机上直接评</strong> <span class="muted">Review right here</span>
-      <p class="muted">用 GitHub 登录后会打开豆子库里的杯测表单，烘焙和码已经填好，你只要填养豆天数和分数。提交后一分钟内收进豆子库，规则和 App 里一样。需要是 RoastCommons 成员。<br>
-      Opens the library's cupping form on GitHub with the roast and code filled in: add rest days and scores. Members only.</p>
-      <a class="button" id="form" href="#">在 GitHub 上写杯测 · Write my cupping</a>
+      <p class="muted">会打开豆子库里的杯测表单（GitHub），烘焙和加密过的码已经填好，你只要填养豆天数和分数，提交后一分钟内收进豆子库。需要是 RoastCommons 成员。<br>
+      Opens the library's cupping form on GitHub with the roast and the sealed code filled in. Members only.</p>
+      <label for="login">你的 GitHub 用户名 · Your GitHub username</label>
+      <input id="login" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="octocat">
+      <p class="muted">码只为这个用户名加密：别人抄走了也用不了。Sealed for this username only.</p>
+      <p id="claimed" class="bad" hidden>这张卡的码已经被认领了：第一个用它交杯测的人才能用。如果就是你，或者烘焙师授权过你，仍然可以写（不带码）；否则交了也会被拒。<br>
+      This card's code has been claimed. If it was you, or the roaster granted you, you can still write (without the code).</p>
+      <button type="button" id="form">在 GitHub 上写杯测 · Write my cupping</button>
+      <p id="why" class="bad" hidden></p>
     </section>
     <section>
-      <strong>已经装了 RoastCommons App？</strong>
-      <p class="muted">Have the app? Open it, or copy the link below into Community › “扫了评测卡？”.</p>
-      <a class="button" id="open" href="#">在 App 里打开 · Open in the app</a>
-      <p class="muted">打不开的话：复制下面的链接，在 App 的「社区」页粘贴到「扫了评测卡？」。</p>
-      <code id="link"></code>
-      <button type="button" id="copy">复制链接 · Copy</button>
+      <strong>在电脑上评</strong> <span class="muted">On a computer</span>
+      <p class="muted">打开 RoastCommons App 的「社区」，找到卡片上这一锅（豆名、日期），在页面里写他评，填上卡片上印的码。<br>
+      In the app's Community page, open this roast (bean and date are on the card) and enter the printed code with your cupping.</p>
     </section>
     <section>
-      <strong>还没有？</strong> <span class="muted">Not a member yet?</span>
+      <strong>还不是成员？</strong> <span class="muted">Not a member yet?</span>
       <ol>
         <li>注册或登录 <a href="https://github.com/" rel="noopener">GitHub</a>。</li>
         <li>在 <a href="https://github.com/RoastCommons/join" rel="noopener">RoastCommons/join</a> 申请加入，写上你拿到了哪位烘焙师的一袋豆子。<b>不要贴出这张卡上的码</b>（那里是公开的）。</li>
-        <li>批准以后回到这一页，点「在 GitHub 上写杯测」，或者在电脑上的 App 里打开。码不会过期。</li>
+        <li>批准以后再扫一次卡。码不会过期。</li>
       </ol>
-      <p class="muted">Ask to join at RoastCommons/join and mention whose bag you received, but never post the code there: it is public. Once approved, come back to this page and write your cupping on GitHub, or open it in the app. The code does not expire.</p>
+      <p class="muted">Ask to join at RoastCommons/join and mention whose bag you received, but never post the code there: it is public. Once approved, scan the card again. The code does not expire.</p>
     </section>
-    <p class="muted">这张卡只能用一次：第一个用它交了杯测的 GitHub 账号就占住了。The card works once.</p>
+    <p class="muted">这张卡只能给一个人用：第一个用它交了杯测的 GitHub 账号就占住了（这个人之后最多再写两条不同养豆天数的）。The card works for one person.</p>
   </div>
 </main>
+<style>
+  input { width:100%; box-sizing:border-box; padding:10px; margin:6px 0 2px; border:1px solid var(--line); border-radius:10px; background:var(--bg); color:var(--fg); font:inherit; }
+</style>
 <script>
   (function () {
     var text = decodeURIComponent((location.hash || "").slice(1));
     var ok = /^[0-9a-f-]{36}\.[a-z0-9]{2,16}\.[A-Z2-7]{20,40}$/.test(text);
     document.getElementById(ok ? "ok" : "bad").hidden = false;
     if (!ok) return;
-    var full = location.origin + location.pathname + "#" + text;
-    document.getElementById("link").textContent = full;
-    document.getElementById("open").href = "roastcommons://review?c=" + encodeURIComponent(text);
-    // the form fills its "pack" field from the query; the library's workflow removes the code once it has read it
-    document.getElementById("form").href = "https://github.com/RoastCommons/library/issues/new?template=cupping.yml&pack="
-      + encodeURIComponent(text);
-    document.getElementById("copy").onclick = function () {
-      navigator.clipboard.writeText(full).then(function () { document.getElementById("copy").textContent = "已复制 · Copied"; });
+    var parts = text.split("."), pack = parts[0], codeId = parts[1], code = parts[2];
+    var login = document.getElementById("login"), why = document.getElementById("why");
+    try { login.value = localStorage.getItem("github-login") || ""; } catch (e) {}
+
+    function hexToB64url(hex) {
+      if (hex.length % 2) hex = "0" + hex;
+      var bin = "";
+      for (var i = 0; i < hex.length; i += 2) bin += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+      return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+    function bytesToB64url(bytes) {
+      var bin = "";
+      for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+    function fail(message) { why.textContent = message; why.hidden = false; }
+    var claimed = false;
+    // codes already used are listed by a fingerprint the library's check publishes here (a minute or so after use)
+    (async function () {
+      try {
+        var list = await (await fetch("claimed.json", {cache: "no-store"})).json();
+        var digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("roastcommons-claimed:" + code)));
+        var mark = Array.from(digest).map(function (b) { return ("0" + b.toString(16)).slice(-2); }).join("").slice(0, 32);
+        claimed = (list.claimed || []).indexOf(mark) >= 0;
+        document.getElementById("claimed").hidden = !claimed;
+      } catch (e) {}
+    })();
+
+    // The code is sealed here, with the library's public key, together with the username, the roast and the
+    // code's id (roastlab/seal.py reads the same RSA-OAEP SHA-256). Only the library's check can open it.
+    document.getElementById("form").onclick = async function () {
+      why.hidden = true;
+      var name = login.value.trim().replace(/^@/, "");
+      if (!/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(name)) { fail("请填你的 GitHub 用户名 · Enter your GitHub username"); return; }
+      try { localStorage.setItem("github-login", name); } catch (e) {}
+      if (claimed) {  // the holder's later cuppings, or a granted member: no code
+        location.href = "https://github.com/RoastCommons/library/issues/new?template=cupping.yml&pack=" + encodeURIComponent(pack);
+        return;
+      }
+      try {
+        var key = await (await fetch("review-key.json", {cache: "no-store"})).json();
+        var jwk = {kty: "RSA", n: hexToB64url(key.n), e: hexToB64url(Number(key.e).toString(16)), alg: "RSA-OAEP-256", ext: true};
+        var pub = await crypto.subtle.importKey("jwk", jwk, {name: "RSA-OAEP", hash: "SHA-256"}, false, ["encrypt"]);
+        var payload = JSON.stringify({p: pack, i: codeId, c: code, l: name.toLowerCase()});
+        var sealed = new Uint8Array(await crypto.subtle.encrypt({name: "RSA-OAEP"}, pub, new TextEncoder().encode(payload)));
+        location.href = "https://github.com/RoastCommons/library/issues/new?template=cupping.yml"
+          + "&pack=" + encodeURIComponent(pack + "." + codeId) + "&code=" + encodeURIComponent(bytesToB64url(sealed));
+      } catch (e) {
+        fail("加密没成功，请换个浏览器再试 · Could not seal the code: " + e);
+      }
     };
   })();
 </script>
