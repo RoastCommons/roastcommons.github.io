@@ -33,6 +33,12 @@
   <div id="bad" class="bad" hidden><p>这个链接不完整。请重新扫描卡片上的二维码。<br>This link is incomplete: scan the card again.</p></div>
   <div id="ok" hidden>
     <section>
+      <strong>在手机上直接评</strong> <span class="muted">Review right here</span>
+      <p class="muted">用 GitHub 登录后会打开豆子库里的杯测表单，烘焙和码已经填好，你只要填养豆天数和分数。提交后一分钟内收进豆子库，规则和 App 里一样。需要是 RoastCommons 成员。<br>
+      Opens the library's cupping form on GitHub with the roast and code filled in: add rest days and scores. Members only.</p>
+      <a class="button" id="form" href="#">在 GitHub 上写杯测 · Write my cupping</a>
+    </section>
+    <section>
       <strong>已经装了 RoastCommons App？</strong>
       <p class="muted">Have the app? Open it, or copy the link below into Community › “扫了评测卡？”.</p>
       <a class="button" id="open" href="#">在 App 里打开 · Open in the app</a>
@@ -45,9 +51,9 @@
       <ol>
         <li>注册或登录 <a href="https://github.com/" rel="noopener">GitHub</a>。</li>
         <li>在 <a href="https://github.com/RoastCommons/join" rel="noopener">RoastCommons/join</a> 申请加入，写上你拿到了哪位烘焙师的一袋豆子。<b>不要贴出这张卡上的码</b>（那里是公开的）。</li>
-        <li>批准以后安装 App、用 GitHub 登录，再回到这一页点「在 App 里打开」。码不会过期。</li>
+        <li>批准以后回到这一页，点「在 GitHub 上写杯测」，或者在电脑上的 App 里打开。码不会过期。</li>
       </ol>
-      <p class="muted">Ask to join at RoastCommons/join and mention whose bag you received, but never post the code there: it is public. Once approved, install the app, sign in, and come back to this page. The code does not expire.</p>
+      <p class="muted">Ask to join at RoastCommons/join and mention whose bag you received, but never post the code there: it is public. Once approved, come back to this page and write your cupping on GitHub, or open it in the app. The code does not expire.</p>
     </section>
     <p class="muted">这张卡只能用一次：第一个用它交了杯测的 GitHub 账号就占住了。The card works once.</p>
   </div>
@@ -61,6 +67,9 @@
     var full = location.origin + location.pathname + "#" + text;
     document.getElementById("link").textContent = full;
     document.getElementById("open").href = "roastcommons://review?c=" + encodeURIComponent(text);
+    // the form fills its "pack" field from the query; the library's workflow removes the code once it has read it
+    document.getElementById("form").href = "https://github.com/RoastCommons/library/issues/new?template=cupping.yml&pack="
+      + encodeURIComponent(text);
     document.getElementById("copy").onclick = function () {
       navigator.clipboard.writeText(full).then(function () { document.getElementById("copy").textContent = "已复制 · Copied"; });
     };
