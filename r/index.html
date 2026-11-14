@@ -38,9 +38,12 @@
       Opens the library's cupping form on GitHub with the roast and the sealed code filled in. Members only.</p>
       <label for="login">你的 GitHub 用户名 · Your GitHub username</label>
       <input id="login" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="octocat">
-      <p class="muted">码只为这个用户名加密：别人抄走了也用不了。Sealed for this username only.</p>
+      <p class="muted">码只为这个用户名加密：别人抄走了也用不了。接下来要用这个账号登录 GitHub（已经登录的会直接打开表单）。<br>
+      Sealed for this username only. You sign in to GitHub with it next (if you already are, the form opens directly).</p>
       <p id="claimed" class="bad" hidden>这张卡的码已经被认领了：第一个用它交杯测的人才能用。如果就是你，或者烘焙师授权过你，仍然可以写（不带码）；否则交了也会被拒。<br>
       This card's code has been claimed. If it was you, or the roaster granted you, you can still write (without the code).</p>
+      <p id="inapp" class="bad" hidden>在微信或 QQ 里打不开 GitHub 登录：请点右上角「…」，选「在浏览器打开」后再继续。<br>
+      GitHub sign-in does not work inside WeChat or QQ: open this page in the browser first.</p>
       <button type="button" id="form">在 GitHub 上写杯测 · Write my cupping</button>
       <p id="why" class="bad" hidden></p>
     </section>
@@ -86,6 +89,10 @@
       return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
     }
     function fail(message) { why.textContent = message; why.hidden = false; }
+    // The library is private: GitHub answers 404 to anyone not signed in. Through its sign-in page, a signed-in
+    // member goes straight on to the form, and anyone else signs in first.
+    function viaSignIn(path) { return "https://github.com/login?return_to=" + encodeURIComponent(path); }
+    if (/MicroMessenger|QQ\//i.test(navigator.userAgent)) document.getElementById("inapp").hidden = false;
     var claimed = false;
     // codes already used are listed by a fingerprint the library's check publishes here (a minute or so after use)
     (async function () {
@@ -106,7 +113,7 @@
       if (!/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(name)) { fail("请填你的 GitHub 用户名 · Enter your GitHub username"); return; }
       try { localStorage.setItem("github-login", name); } catch (e) {}
       if (claimed) {  // the holder's later cuppings, or a granted member: no code
-        location.href = "https://github.com/RoastCommons/library/issues/new?template=cupping.yml&pack=" + encodeURIComponent(pack);
+        location.href = viaSignIn("/RoastCommons/library/issues/new?template=cupping.yml&pack=" + encodeURIComponent(pack));
         return;
       }
       try {
@@ -115,8 +122,8 @@
         var pub = await crypto.subtle.importKey("jwk", jwk, {name: "RSA-OAEP", hash: "SHA-256"}, false, ["encrypt"]);
         var payload = JSON.stringify({p: pack, i: codeId, c: code, l: name.toLowerCase()});
         var sealed = new Uint8Array(await crypto.subtle.encrypt({name: "RSA-OAEP"}, pub, new TextEncoder().encode(payload)));
-        location.href = "https://github.com/RoastCommons/library/issues/new?template=cupping.yml"
-          + "&pack=" + encodeURIComponent(pack + "." + codeId) + "&code=" + encodeURIComponent(bytesToB64url(sealed));
+        location.href = viaSignIn("/RoastCommons/library/issues/new?template=cupping.yml"
+          + "&pack=" + encodeURIComponent(pack + "." + codeId) + "&code=" + encodeURIComponent(bytesToB64url(sealed)));
       } catch (e) {
         fail("加密没成功，请换个浏览器再试 · Could not seal the code: " + e);
       }
